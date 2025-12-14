@@ -28,6 +28,7 @@ public:
   bool is_completed() const { return m_done; }
   void run(std::shared_ptr<Logger> logger = nullptr);
   std::string filename() const { return m_filename; }
+  std::string step(); 
   std::string name() const { return m_name; }
   std::string basename() const;
   int index() const { return m_index; }
@@ -41,6 +42,7 @@ protected:
 
   std::shared_ptr<Logger> m_logger;
   std::string m_filename;
+  std::string m_step;
   int m_index;
   int m_jpgquality;
   std::string m_name;

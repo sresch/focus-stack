@@ -12,7 +12,7 @@ CXXFLAGS += $(shell pkg-config --silence-errors --cflags-only-I opencv4 || pkg-c
 LDFLAGS += $(shell pkg-config --silence-errors --libs-only-L opencv4 || pkg-config --silence-errors --cflags-only-I opencv)
 
 # Required compilation options
-CXXFLAGS += --std=c++14
+CXXFLAGS += --std=c++17
 LDFLAGS += -lpthread -lm
 LDFLAGS += -lopencv_video -lopencv_imgcodecs -lopencv_photo -lopencv_imgproc -lopencv_core
 
@@ -20,6 +20,7 @@ VERSION = $(shell git describe --always)
 CXXFLAGS += -DGIT_VERSION=\"$(shell git describe --always --dirty 2>/dev/null)\"
 
 # List of source code files
+CXXSRCS += transform_store.cc
 CXXSRCS += focusstack.cc worker.cc options.cc logger.cc
 CXXSRCS += radialfilter.cc histogrampercentile.cc
 CXXSRCS += task_3dpreview.cc
@@ -28,6 +29,7 @@ CXXSRCS += task_depthmap.cc task_depthmap_inpaint.cc task_focusmeasure.cc
 CXXSRCS += task_grayscale.cc task_loadimg.cc
 CXXSRCS += task_merge.cc task_reassign.cc task_saveimg.cc
 CXXSRCS += task_wavelet.cc task_wavelet_opencl.cc
+
 
 # Generate list of object file and dependency file names
 OBJS = $(CXXSRCS:%.cc=build/%.o)

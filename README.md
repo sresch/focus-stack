@@ -58,6 +58,10 @@ For advanced usage, see `--help` for list of all options or [check the manual](d
       --halo-radius=20              Radius of halo effects to remove from depthmap
       --3dviewpoint=x:y:z:zscale    Viewpoint for 3D view (default 1:1:1:2)
 
+    Transforms storage:
+      --save_transforms=<file>      Directory to save transform operations to (default disabled)
+      --load_transforms=<file>      Directory to load transform operations from (default calculate new)
+
     Performance options:
       --threads=2                   Select number of threads to use (default number of CPUs + 1)
       --batchsize=8                 Images per merge batch (default 8)

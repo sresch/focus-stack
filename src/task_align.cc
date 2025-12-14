@@ -16,6 +16,7 @@ Task_Align::Task_Align(std::shared_ptr<ImgTask> refgray, std::shared_ptr<ImgTask
                        std::shared_ptr<ImgTask> srcgray, std::shared_ptr<ImgTask> srccolor,
                        std::shared_ptr<Task_Align> initial_guess,
                        std::shared_ptr<Task_Align> stacked_transform,
+                       std::shared_ptr<Transform_Store> transform_store,
                        FocusStack::align_flags_t flags)
 {
   m_filename = "aligned_" + srccolor->basename();
@@ -28,6 +29,7 @@ Task_Align::Task_Align(std::shared_ptr<ImgTask> refgray, std::shared_ptr<ImgTask
   m_srccolor = srccolor;
   m_initial_guess = initial_guess;
   m_stacked_transform = stacked_transform;
+  m_transform_store = transform_store;
   m_flags = flags;
 
   m_depends_on.push_back(refgray);
@@ -257,25 +259,38 @@ void Task_Align::match_transform(int max_resolution, bool rough)
 
   apply_contrast_whitebalance(src);
 
-  m_transformation.at<float>(0, 2) *= scale_ratio;
-  m_transformation.at<float>(1, 2) *= scale_ratio;
 
-  if (rough)
+  /* load or calculate  */
+  if (m_transform_store->is_load_transform())
   {
-    cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
-                        cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 25, 0.01),
-                        mask, 1);
+    m_transform_store->load(m_srcgray, m_transformation);
   }
   else
   {
-    cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
-                        cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 50, 0.001),
-                        mask, 3);
+    m_transformation.at<float>(0, 2) *= scale_ratio;
+    m_transformation.at<float>(1, 2) *= scale_ratio;
+
+    if (rough)
+    {
+      cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
+                          cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 25, 0.01),
+                          mask, 1);
+    }
+    else
+    {
+      cv::findTransformECC(src, ref, m_transformation, cv::MOTION_AFFINE,
+                          cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 50, 0.001),
+                          mask, 3);
+    }
+
+    m_transformation.at<float>(0, 2) /= scale_ratio;
+    m_transformation.at<float>(1, 2) /= scale_ratio;
   }
 
-
-  m_transformation.at<float>(0, 2) /= scale_ratio;
-  m_transformation.at<float>(1, 2) /= scale_ratio;
+  if (m_transform_store->is_store_transform())
+  {
+    m_transform_store->store(m_srcgray, m_transformation);
+  }
 }
 
 void Task_Align::match_whitebalance()

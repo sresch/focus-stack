@@ -17,6 +17,7 @@ class Task_Merge;
 class Task_Align;
 class Task_Reassign_Map;
 class Task_Depthmap;
+class Transform_Store;
 class Worker;
 class ImgTask;
 class Logger;
@@ -61,6 +62,8 @@ public:
   void set_nocrop(bool nocrop) { m_nocrop = nocrop; }
   void set_align_only(bool align_only) { m_align_only = align_only; }
   void set_verbose(bool verbose);
+  void set_save_transforms(std::string path);
+  void set_load_transforms(std::string path); 
   void set_threads(int threads) { m_threads = threads; }
   void set_batchsize(int batchsize) { m_batchsize = batchsize; }
   void set_reference(int refidx) { m_reference = refidx; }
@@ -137,6 +140,9 @@ private:
 
   cv::Vec3f m_3dviewpoint;
   float m_3dzscale;
+
+  std::shared_ptr<Transform_Store> m_transform_store;
+
 
   int m_threads;
   int m_batchsize;

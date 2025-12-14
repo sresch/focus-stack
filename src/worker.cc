@@ -1,5 +1,6 @@
 #include "worker.hh"
 #include <cstdio>
+#include <iostream>
 
 #ifdef USE_MALLINFO
 #include <malloc.h>
@@ -7,7 +8,7 @@
 
 using namespace focusstack;
 
-Task::Task(): m_filename("unknown"), m_index(0), m_name("Base task"), m_running(false), m_done(false)
+Task::Task(): m_filename("unknown"), m_step("unknown"), m_index(0), m_name("Base task"), m_running(false), m_done(false)
 {
 
 }
@@ -88,6 +89,37 @@ std::string Task::basename() const
     basename = basename.substr(pos + 1);
   }
   return basename;
+}
+
+// get steps form filename structured as:
+// _x_00197_y_00000_step_05500_PS9.jpg
+
+std::string Task::step()
+{
+  // if m_step was already parsed, return it
+  if (m_step != "unknown")
+  {
+    return m_step;
+  }
+
+  std::string filename = this->basename();
+  const std::string key = "step_";
+  size_t pos = filename.find("step_");
+  
+  if (pos == std::string::npos)
+  {
+    throw std::logic_error("Can't find step_ in '" + filename + "'");
+  }
+  pos += key.length(); // move to start of number
+  size_t end = filename.find('_', pos);
+  if (end == std::string::npos)
+  {
+    throw std::logic_error("Can't identify step in '" + filename + "', missing _ after steps");
+  }
+
+  m_step = filename.substr(pos, end - pos);
+
+  return m_step;
 }
 
 void Task::wait()

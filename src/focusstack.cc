@@ -43,6 +43,7 @@ FocusStack::FocusStack():
   m_wait_images(0.0f)
 {
   m_logger = std::make_shared<Logger>();
+  m_transform_store = std::make_shared<Transform_Store>(m_logger);
 
   reset();
 }
@@ -59,6 +60,14 @@ void FocusStack::set_verbose(bool verbose)
 void FocusStack::set_log_callback(std::function<void(log_level_t level, std::string)> callback)
 {
   m_logger->set_callback(callback);
+}
+
+void FocusStack::set_save_transforms(std::string path) {
+  m_transform_store->set_store_transform (path);
+}
+
+void FocusStack::set_load_transforms(std::string path) {
+  m_transform_store->set_load_transform (path);
 }
 
 bool FocusStack::run()
@@ -374,6 +383,7 @@ void FocusStack::schedule_alignment(int i)
                                               m_input_images.at(i),
                                               m_aligned_imgs.at(neighbour),
                                               nullptr,
+                                              m_transform_store,
                                               m_align_flags);
     }
     else
@@ -390,6 +400,7 @@ void FocusStack::schedule_alignment(int i)
                                               m_input_images.at(i),
                                               nullptr,
                                               m_aligned_imgs.at(neighbour),
+                                              m_transform_store,
                                               m_align_flags);
     }
   }

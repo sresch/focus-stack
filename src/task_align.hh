@@ -6,7 +6,9 @@
 #pragma once
 #include "worker.hh"
 #include "task_loadimg.hh"
+#include "transform_store.hh"
 #include "focusstack.hh"
+
 
 namespace focusstack {
 
@@ -23,6 +25,7 @@ public:
              std::shared_ptr<ImgTask> srcgray, std::shared_ptr<ImgTask> srccolor,
              std::shared_ptr<Task_Align> initial_guess = nullptr,
              std::shared_ptr<Task_Align> stacked_transform = nullptr,
+             std::shared_ptr<Transform_Store> transform_store = nullptr,
              FocusStack::align_flags_t flags = FocusStack::ALIGN_DEFAULT
             );
 
@@ -44,6 +47,7 @@ private:
   std::shared_ptr<ImgTask> m_srccolor;
   std::shared_ptr<Task_Align> m_initial_guess;
   std::shared_ptr<Task_Align> m_stacked_transform;
+  std::shared_ptr<Transform_Store> m_transform_store;
 
   FocusStack::align_flags_t m_flags;
   cv::Rect m_roi;

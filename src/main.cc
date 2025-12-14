@@ -80,6 +80,10 @@ int main(int argc, const char *argv[])
                  "  --halo-radius=20              Radius of halo effects to remove from depthmap\n"
                  "  --3dviewpoint=x:y:z:zscale    Viewpoint for 3D view (default 1:1:1:2)\n";
     std::cerr << "\n";
+    std::cerr << "Transforms storage:\n"
+                 "  --save_transforms=<file>      Directory to safe transform operations to (default disabled)\n"
+                 "  --load_transforms=<file>      Directory to load transform operations from (default calculate new)\n";
+    std::cerr << "\n";
     std::cerr << "Performance options:\n"
                  "  --threads=2                   Select number of threads to use (default number of CPUs + 1)\n"
                  "  --batchsize=8                 Images per merge batch (default 8)\n"
@@ -133,6 +137,21 @@ int main(int argc, const char *argv[])
   stack.set_halo_radius(std::stof(options.get_arg("--halo-radius", "20")));
   stack.set_remove_bg(std::stoi(options.get_arg("--remove-bg", "0")));
   stack.set_3dviewpoint(options.get_arg("--3dviewpoint", "1:1:1:2"));
+
+  // Transforms
+  if (options.has_flag("--save-transforms"))
+  {
+    stack.set_save_transforms(options.get_arg("--save-transforms"));
+
+    if (options.has_flag("--load-transforms"))
+    {
+      std::cerr << "safe and load transforms specified -> load transforms ignored\n";
+    }
+  }
+  else if (options.has_flag("--load-transforms"))
+  {
+    stack.set_load_transforms(options.get_arg("--load-transforms"));
+  }
 
   // Performance options
   if (options.has_flag("--threads"))
